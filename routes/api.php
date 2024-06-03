@@ -17,3 +17,4 @@ Route::post('/two-factor-auth-setup/{step}', [AuthController::class, 'twoFactorA
 Route::post('/two-factor-auth-verify', [AuthController::class, 'twoFactorAuthVerify']);
 Route::get('/two-factor-auth-status', [AuthController::class, 'twoFactorAuthStatus']);
 Route::get('/two-factor-auth-request', [AuthController::class, 'twoFactorAuthRequest']);
+Route::post('/two-factor-auth-request-accept', [AuthController::class, 'twoFactorAuthRequestAccept']);

@@ -244,4 +244,29 @@ class AuthController extends Controller
 
         return response()->json(['request' => $request], 200);
     }
+    public function twoFactorAuthRequestAccept(Request $request)
+    {
+        $token = $request->bearerToken();
+
+        $unique_id = $request->unique_id;
+
+        if (!$token) {
+            return response()->json(['error' => 'Token required'], 401);
+        }
+
+        $phone = Phone::where('two_factor_secret', $token)->first();
+
+        if (!$phone) {
+            return response()->json(['error' => 'Invalid token'], 401);
+        }
+
+        $request = TwoFactorRequest::where('unique_id', $unique_id)->where('accepted', 0)->where('device_id', $phone->id)->first();
+
+        if (!$request) {
+            return response()->json(['error' => 'No request found'], 400);
+        }
+
+        $request->accepted = 1;
+        $request->save();
+    }
 }
