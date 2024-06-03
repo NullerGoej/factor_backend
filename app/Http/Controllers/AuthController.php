@@ -268,5 +268,7 @@ class AuthController extends Controller
 
         $request->accepted = 1;
         $request->save();
+
+        return response()->json(['message' => 'Request accepted successfully'], 200);
     }
 }
