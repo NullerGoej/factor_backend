@@ -107,11 +107,6 @@ class AuthController extends Controller
         // Retrieve the associated user.
         $user = $accessToken->tokenable;
 
-        // Check if the token has the 'login' ability.
-        if (!$accessToken->can('login')) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
         switch ($step) {
             case 1:
                 // Check if the user has already set up 2FA.
@@ -172,12 +167,6 @@ class AuthController extends Controller
 
                 return response()->json(['message' => '2FA setup successfully'], 200);
         }
-    }
-    public function logout(Request $request)
-    {
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'User logged out successfully'], 200);
     }
     // scan qr code
     public function twoFactorAuthVerify(Request $request)
@@ -270,5 +259,67 @@ class AuthController extends Controller
         $request->save();
 
         return response()->json(['message' => 'Request accepted successfully'], 200);
+    }
+
+    public function user(Request $request)
+    {
+        $token = $request->bearerToken();
+
+        if (!$token) {
+            return response()->json(['error' => 'Token required'], 401);
+        }
+
+        // Retrieve the personal access token instance.
+        $accessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
+
+        if (!$accessToken) {
+            return response()->json(['error' => 'Invalid token'], 401);
+        }
+
+        $user = $accessToken->tokenable;
+
+        return response()->json(['user' => $user], 200);
+    }
+
+    public function logout(Request $request)
+    {
+        $token = $request->bearerToken();
+
+        if (!$token) {
+            return response()->json(['error' => 'Token required'], 401);
+        }
+
+        // Revoke the token.
+        $accessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
+        if (!$accessToken) {
+            return response()->json(['error' => 'Invalid token'], 401);
+        }
+        $accessToken->delete();
+
+        return response()->json(['message' => 'User logged out successfully'], 200);
+    }
+
+    public function logoutAll(Request $request)
+    {
+        $token = $request->bearerToken();
+
+        if (!$token) {
+            return response()->json(['error' => 'Token required'], 401);
+        }
+
+        // Retrieve the personal access token instance.
+        $accessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
+
+        if (!$accessToken) {
+            return response()->json(['error' => 'Invalid token'], 401);
+        }
+
+        // Retrieve the associated user.
+        $user = $accessToken->tokenable;
+
+        // Revoke all tokens.
+        $user->tokens()->delete();
+
+        return response()->json(['message' => 'User logged out on all machines successfully'], 200);
     }
 }

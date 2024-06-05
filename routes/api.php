@@ -11,7 +11,9 @@ use App\Http\Controllers\AuthController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+Route::get('/user', [AuthController::class, 'user']);
+Route::get('/logout', [AuthController::class, 'logout']);
+Route::get('/logout-all', [AuthController::class, 'logoutAll']);
 Route::post('/two-factor-auth', [AuthController::class, 'twoFactorAuth']);
 Route::post('/two-factor-auth-setup/{step}', [AuthController::class, 'twoFactorAuthSetup']);
 Route::post('/two-factor-auth-verify', [AuthController::class, 'twoFactorAuthVerify']);
