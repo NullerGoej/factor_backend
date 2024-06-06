@@ -25,6 +25,7 @@ class AuthController extends Controller
             'lastname' => $request->lastname,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'image' => "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg"
         ]);
 
         $user->save();
@@ -277,6 +278,14 @@ class AuthController extends Controller
         }
 
         $user = $accessToken->tokenable;
+
+        $phone = Phone::where('user_id', $user->id)->first();
+
+        if (!$phone) {
+            $user->phone = 0;
+        } else {
+            $user->phone = $phone->two_factor_setup;
+        }
 
         return response()->json(['user' => $user], 200);
     }
