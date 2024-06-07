@@ -122,7 +122,7 @@ class AuthController extends Controller
                 }
 
                 // Generate a 2FA secret key.
-                $twoFactorSecret = \ParagonIE\ConstantTime\Base32::encodeUpper(random_bytes(15));
+                $twoFactorSecret = \ParagonIE\ConstantTime\Base32::encodeUpper(random_bytes(25));
 
                 // Create entry in the phones table.
                 $phone = new Phone([
