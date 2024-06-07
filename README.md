@@ -1,4 +1,4 @@
-<p align="center"><a href="https://github.com/NullerGoej/factor_backend" target="_blank"><img src="https://i.imgur.com/7iSNi5G.png" width="400" alt="Accessio Logo"></a></p>
+<p align="center"><a href="https://github.com/NullerGoej/factor_backend" target="_blank"><img src="https://i.imgur.com/7aTMjW9.png" width="400" alt="Accessio Logo"></a></p>
 
 <p align="center">
 <a href="https://github.com/NullerGoej/factor_backend" target="_blank"><img src="https://img.shields.io/github/languages/top/NullerGoej/factor_backend" alt="Backend Language"></a>
