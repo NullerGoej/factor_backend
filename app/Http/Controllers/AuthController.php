@@ -44,7 +44,7 @@ class AuthController extends Controller
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
     }
-    public function twoFactorAuth(Request $request)
+    public function twoFactorAuthRequest(Request $request)
     {
         $token = $request->bearerToken();
 
@@ -212,7 +212,7 @@ class AuthController extends Controller
         return response()->json(['two_factor_setup' => $phone->two_factor_setup], 200);
     }
     // check for new 2fa request
-    public function twoFactorAuthRequest(Request $request)
+    public function twoFactorAuthRequestStatus(Request $request)
     {
         $token = $request->bearerToken();
 
