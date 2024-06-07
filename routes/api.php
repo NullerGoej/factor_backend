@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/up', function () {
+Route::get('/', function () {
     return response()->json(['status' => 'ok']);
 });
 
