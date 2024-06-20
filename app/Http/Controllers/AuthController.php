@@ -238,8 +238,6 @@ class AuthController extends Controller
     {
         $token = $request->bearerToken();
 
-        $unique_id = $request->unique_id;
-
         if (!$token) {
             return response()->json(['error' => 'Token required'], 401);
         }
@@ -248,6 +246,12 @@ class AuthController extends Controller
 
         if (!$phone) {
             return response()->json(['error' => 'Invalid token'], 401);
+        }
+
+        $unique_id = $request->unique_id;
+
+        if (!$unique_id) {
+            return response()->json(['error' => 'Unique ID required'], 400);
         }
 
         $request = TwoFactorRequest::where('unique_id', $unique_id)->where('accepted', 0)->where('device_id', $phone->id)->first();
@@ -289,7 +293,7 @@ class AuthController extends Controller
 
         return response()->json(['user' => $user], 200);
     }
-
+    // logout
     public function logout(Request $request)
     {
         $token = $request->bearerToken();
