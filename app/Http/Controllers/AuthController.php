@@ -78,16 +78,18 @@ class AuthController extends Controller
             return response()->json(['error' => 'Device not linked'], 400);
         }
 
+        $unique_id = $phone->two_factor_secret . "_" . time();
+
         // Create request datetime
         $request = new TwoFactorRequest([
-            'unique_id' => Hash::make($phone->two_factor_secret . "_" . time()),
+            'unique_id' => Hash::make($unique_id),
             'ip_address' => $request->ip_address,
             'action' => $request->action,
             'device_id' => $phone->id,
         ]);
 
         $request->save();
-        return response()->json(['message' => '2FA request sent successfully'], 200);
+        return response()->json(['message' => 'Request created successfully', 'unique_id' => $unique_id], 200);
     }
     // public function twoFactorAuthSetup(Request $request)
     public function twoFactorAuthSetup(Request $request, $step = 1)
@@ -188,7 +190,7 @@ class AuthController extends Controller
         $phone->two_factor_6_digit = rand(100000, 999999);
         $phone->save();
 
-        return response()->json(['message' => '2FA verified successfully','two_factor_6_digit' => $phone->two_factor_6_digit], 200);
+        return response()->json(['message' => '2FA verified successfully', 'two_factor_6_digit' => $phone->two_factor_6_digit], 200);
     }
     // check if 2fa is verified
     public function twoFactorAuthStatus(Request $request)
@@ -330,5 +332,54 @@ class AuthController extends Controller
         $user->tokens()->delete();
 
         return response()->json(['message' => 'User logged out on all machines successfully'], 200);
+    }
+    // find specific auth request
+    public function findAuthRequest(Request $request)
+    {
+        $unique_id = $request->unique_id;
+
+        $token = $request->bearerToken();
+
+        if (!$token) {
+            return response()->json(['error' => 'Token required'], 401);
+        }
+
+        // Retrieve the personal access token instance.
+        $accessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
+
+        if (!$accessToken) {
+            return response()->json(['error' => 'Invalid token'], 401);
+        }
+
+        // Retrieve the associated user.
+        $user = $accessToken->tokenable;
+
+        // Check if the user has already set up 2FA.
+        $phone = Phone::where('user_id', $user->id)->first();
+
+        if (!$phone) {
+            return response()->json(['error' => '2FA not set up'], 400);
+        }
+
+        // Assuming $phone->id is sanitized and valid
+        $requests = TwoFactorRequest::where("device_id", $phone->id)->get();
+
+        // Use collection methods to find the matched request
+        $matchedRequest = $requests->first(function ($request) use ($unique_id) {
+            return Hash::check($unique_id, $request->unique_id);
+        });
+
+        // Handle the response based on whether a matched request was found
+        if (is_null($matchedRequest)) {
+            return response()->json(['error' => 'No request found'], 400);
+        }
+
+        $matchedRequestArray = $matchedRequest->toArray();
+
+        // Remove the unique_id from the array
+        unset($matchedRequestArray['unique_id']);
+
+        // Return the modified array in the response
+        return response()->json($matchedRequestArray, 200);
     }
 }

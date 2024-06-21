@@ -20,3 +20,4 @@ Route::get('/two-factor-auth-status', [AuthController::class, 'twoFactorAuthStat
 Route::post('/two-factor-auth-request', [AuthController::class, 'twoFactorAuthRequest']);
 Route::get('/two-factor-auth-request-status', [AuthController::class, 'twoFactorAuthRequestStatus']);
 Route::post('/two-factor-auth-request-accept', [AuthController::class, 'twoFactorAuthRequestAccept']);
+Route::post('/two-factor-auth-request-web', [AuthController::class, 'findAuthRequest']);
