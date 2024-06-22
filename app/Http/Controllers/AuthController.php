@@ -190,7 +190,9 @@ class AuthController extends Controller
         $phone->two_factor_6_digit = rand(100000, 999999);
         $phone->save();
 
-        return response()->json(['message' => '2FA verified successfully', 'two_factor_6_digit' => $phone->two_factor_6_digit], 200);
+        $user = User::find($phone->user_id);
+
+        return response()->json(['message' => '2FA verified successfully', 'two_factor_6_digit' => $phone->two_factor_6_digit, 'email' => $user->email], 200);
     }
     // check if 2fa is verified
     public function twoFactorAuthStatus(Request $request)
